@@ -12,21 +12,36 @@
 
 ## 快速开始
 
-### 1. 克隆仓库
+### 方式一：一键安装（推荐）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Ace-Hanny/openclaw-task-planner/main/scripts/install.sh | bash
+```
+
+安装完成后，运行交互式配置脚本：
+
+```bash
+cd openclaw-task-planner/pomodoro
+../scripts/setup-feishu.sh
+```
+
+### 方式二：手动安装
+
+#### 1. 克隆仓库
 
 ```bash
 git clone https://github.com/Ace-Hanny/openclaw-task-planner.git
 cd openclaw-task-planner
 ```
 
-### 2. 安装依赖
+#### 2. 安装依赖
 
 ```bash
 cd pomodoro
 npm install
 ```
 
-### 3. 配置飞书应用
+#### 3. 配置飞书应用
 
 1. 创建飞书应用：https://open.feishu.cn/app
 2. 获取 App ID 和 App Secret
@@ -39,7 +54,7 @@ cp config.example.json config.json
 
 5. 编辑 `config.json`，填入你的配置
 
-### 4. 启动服务
+#### 4. 启动服务
 
 ```bash
 npm start
