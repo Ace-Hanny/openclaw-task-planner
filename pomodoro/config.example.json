@@ -1,0 +1,11 @@
+{
+  "port": 9998,
+  "feishu": {
+    "appId": "your_app_id",
+    "appSecret": "your_app_secret",
+    "appToken": "your_bitable_app_token",
+    "dailyPlanTableId": "your_daily_plan_table_id",
+    "executionLogTableId": "your_execution_log_table_id",
+    "userOpenId": "your_user_open_id"
+  }
+}

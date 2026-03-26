@@ -1,0 +1,18 @@
+{
+  "name": "openclaw-task-planner",
+  "version": "1.0.0",
+  "description": "任务规划系统 - 番茄钟 + 多维表格 + AI 规划",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["pomodoro", "task-planner", "feishu", "bitable"],
+  "author": "Ace-Hanny",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^2.6.7"
+  }
+}

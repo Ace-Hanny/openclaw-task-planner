@@ -1,0 +1,7 @@
+node_modules/
+config.json
+.token-cache.json
+.pending-operations.json
+.today-stats.json
+.DS_Store
+*.log

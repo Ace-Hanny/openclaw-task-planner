@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄钟计时器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 深色模式切换按钮 -->
+        <button type="button" class="theme-toggle" id="themeToggle" onclick="PomodoroApp.toggleTheme()" aria-label="切换深色模式">
+            <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+
+        <!-- 头部 -->
+        <header class="header">
+            <h1>
+                <svg class="logo-icon" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true">
+                    <ellipse cx="50" cy="55" rx="35" ry="38" fill="#E8A317"/>
+                    <ellipse cx="50" cy="55" rx="30" ry="33" fill="#FF6B35"/>
+                    <path d="M50 17 Q55 10 52 5 Q50 8 48 5 Q45 10 50 17" fill="#228B22"/>
+                    <ellipse cx="40" cy="45" rx="8" ry="12" fill="#FFD700" opacity="0.4"/>
+                </svg>
+                专注时钟
+            </h1>
+            <!-- 【P1-修复】使用语义化标签 dl/dt/dd -->
+            <dl class="stats-bar">
+                <div class="stat-item">
+                    <dt class="visually-hidden">今日番茄钟数量</dt>
+                    <dd class="stat-item-content">
+                        <svg class="stat-icon" viewBox="0 0 100 100" width="28" height="28" aria-hidden="true">
+                            <ellipse cx="50" cy="55" rx="35" ry="38" fill="#E8A317"/>
+                            <ellipse cx="50" cy="55" rx="30" ry="33" fill="#FF6B35"/>
+                            <path d="M50 17 Q55 10 52 5 Q50 8 48 5 Q45 10 50 17" fill="#228B22"/>
+                            <ellipse cx="40" cy="45" rx="8" ry="12" fill="#FFD700" opacity="0.4"/>
+                        </svg>
+                        <span class="stat-value" id="todayPomodoros" aria-live="polite">0</span>
+                        <span class="stat-label">今日番茄钟</span>
+                    </dd>
+                </div>
+                <div class="stat-item">
+                    <dt class="visually-hidden">今日专注分钟数</dt>
+                    <dd class="stat-item-content">
+                        <svg class="stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span class="stat-value" id="todayMinutes" aria-live="polite">0</span>
+                        <span class="stat-label">今日专注分钟</span>
+                    </dd>
+                </div>
+                <div class="stat-item stat-clickable" onclick="PomodoroApp.showStatsModal()" title="查看详细统计" role="button" tabindex="0" aria-label="查看详细统计">
+                    <dt class="visually-hidden">查看详细统计</dt>
+                    <dd class="stat-item-content">
+                        <svg class="stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        <span class="stat-label" id="todayDate">今日统计</span>
+                        <span class="stat-action">查看详情</span>
+                    </dd>
+                </div>
+            </dl>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 左侧：任务列表 -->
+            <section class="task-panel" aria-labelledby="task-panel-title">
+                <div class="panel-header">
+                    <h2 id="task-panel-title">
+                        <svg class="panel-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        今日任务
+                    </h2>
+                    <button type="button" class="btn-add-task" onclick="PomodoroApp.showAddTaskModal()" aria-label="添加新任务">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        添加任务
+                    </button>
+                </div>
+                <div class="task-list" id="taskList" role="list" aria-label="任务列表">
+                    <div class="loading">加载中...</div>
+                </div>
+            </section>
+
+            <!-- 右侧：计时器 -->
+            <section class="timer-panel" aria-labelledby="timer-panel-title">
+                <h2 id="timer-panel-title" class="visually-hidden">番茄钟计时器</h2>
+                <div class="timer-display" role="timer" aria-label="番茄钟计时器">
+                    <svg class="timer-ring" width="300" height="300" viewBox="0 0 300 300" aria-hidden="true">
+                        <!-- 背景圆环 -->
+                        <circle cx="150" cy="150" r="140" fill="none" stroke="var(--ring-bg)" stroke-width="12"/>
+                        <!-- 进度圆环 -->
+                        <circle class="progress-ring" cx="150" cy="150" r="140" fill="none" stroke="url(#progressGradient)" stroke-width="12" stroke-linecap="round"
+                            stroke-dasharray="879.65" stroke-dashoffset="0"
+                            transform="rotate(-90 150 150)"/>
+                        <!-- 渐变定义 -->
+                        <defs>
+                            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700"/>
+                                <stop offset="50%" style="stop-color:#FFA500"/>
+                                <stop offset="100%" style="stop-color:#FF8C00"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="timer-circle">
+                        <span class="timer-text" id="timerDisplay" aria-live="polite" aria-atomic="true">25:00</span>
+                    </div>
+                </div>
+                
+                <div class="current-task" id="currentTask">
+                    <span class="task-label">当前任务：</span>
+                    <span class="task-name" id="currentTaskName" aria-live="polite">请选择任务</span>
+                </div>
+
+                <div class="timer-controls" role="group" aria-label="计时器控制">
+                    <button type="button" class="btn btn-primary" id="startBtn" onclick="PomodoroApp.toggleTimer()" aria-label="开始计时">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        开始
+                    </button>
+                    <button type="button" class="btn btn-warning" id="finishBtn" onclick="PomodoroApp.finishPomodoro()" style="display: none;" aria-label="结束当前番茄钟">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                        </svg>
+                        结束
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetBtn" onclick="PomodoroApp.resetTimer()" aria-label="重置计时器">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        重置
+                    </button>
+                </div>
+
+                <div class="timer-info">
+                    <p>
+                        <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        番茄钟时长：<span id="timerDurationDisplay">25</span> 分钟
+                    </p>
+                    <p>
+                        <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        专注工作，高效产出
+                    </p>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="PomodoroApp.showSettingsModal()" aria-label="打开设置">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        设置
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <p>
+                <svg class="inline-icon" viewBox="0 0 100 100" width="16" height="16" aria-hidden="true">
+                    <ellipse cx="50" cy="55" rx="35" ry="38" fill="#E8A317"/>
+                    <ellipse cx="50" cy="55" rx="30" ry="33" fill="#FF6B35"/>
+                    <path d="M50 17 Q55 10 52 5 Q50 8 48 5 Q45 10 50 17" fill="#228B22"/>
+                </svg>
+                专注时钟 | 专注每一刻
+            </p>
+        </footer>
+    </div>
+
+    <!-- 添加任务弹窗 -->
+    <div class="modal" id="addTaskModal" role="dialog" aria-modal="true" aria-labelledby="add-task-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="add-task-title">
+                    <svg class="modal-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    添加临时任务
+                </h3>
+                <button type="button" class="modal-close" onclick="PomodoroApp.hideAddTaskModal()" aria-label="关闭">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newTaskName">任务名称</label>
+                    <input type="text" id="newTaskName" placeholder="输入任务名称...">
+                </div>
+                <div class="form-group">
+                    <label for="newTaskPomodoros">预计番茄钟数</label>
+                    <select id="newTaskPomodoros">
+                        <option value="1">1 个</option>
+                        <option value="2">2 个</option>
+                        <option value="3" selected>3 个</option>
+                        <option value="4">4 个</option>
+                        <option value="5">5 个</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="PomodoroApp.hideAddTaskModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="PomodoroApp.addTask()">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="settings-title">
+                    <svg class="modal-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    设置
+                </h3>
+                <button type="button" class="modal-close" onclick="PomodoroApp.hideSettingsModal()" aria-label="关闭">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pomodoroDuration">番茄钟时长（分钟）</label>
+                    <select id="pomodoroDuration">
+                        <option value="15">15 分钟</option>
+                        <option value="20">20 分钟</option>
+                        <option value="25" selected>25 分钟（推荐）</option>
+                        <option value="30">30 分钟</option>
+                        <option value="45">45 分钟</option>
+                        <option value="60">60 分钟</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="breakDuration">休息时长（分钟）</label>
+                    <select id="breakDuration">
+                        <option value="3">3 分钟</option>
+                        <option value="5" selected>5 分钟（推荐）</option>
+                        <option value="10">10 分钟</option>
+                        <option value="15">15 分钟</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>声音提醒</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="soundEnabled" checked>
+                        <label for="soundEnabled" class="toggle-label">开启</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="PomodoroApp.hideSettingsModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="PomodoroApp.saveSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统计报表弹窗 -->
+    <div class="modal" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="stats-title">
+                    <svg class="modal-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    统计报表
+                </h3>
+                <button type="button" class="modal-close" onclick="PomodoroApp.hideStatsModal()" aria-label="关闭">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-tabs" role="tablist" aria-label="统计周期选择">
+                    <button type="button" class="stats-tab active" onclick="PomodoroApp.switchStatsTab('week')" role="tab" aria-selected="true" aria-controls="statsContent">本周</button>
+                    <button type="button" class="stats-tab" onclick="PomodoroApp.switchStatsTab('month')" role="tab" aria-selected="false" aria-controls="statsContent">本月</button>
+                    <button type="button" class="stats-tab" onclick="PomodoroApp.switchStatsTab('total')" role="tab" aria-selected="false" aria-controls="statsContent">总计</button>
+                </div>
+                <div class="stats-content" id="statsContent" role="tabpanel">
+                    <!-- 统计内容动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="notification" id="notification" role="alert" aria-live="assertive">
+        <svg class="notification-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span class="notification-text">番茄钟完成！休息一下吧~</span>
+    </div>
+
+    <!-- 任务完成庆祝动画容器 -->
+    <div class="celebration-container" id="celebrationContainer" aria-hidden="true"></div>
+
+    <!-- 自定义弹窗 -->
+    <div class="custom-dialog" id="customDialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialogMessage">
+        <div class="dialog-content">
+            <div class="dialog-icon" id="dialogIcon" aria-hidden="true"></div>
+            <h3 class="dialog-title" id="dialog-title"></h3>
+            <p class="dialog-message" id="dialogMessage"></p>
+            <div class="dialog-actions" id="dialogActions"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    
+    <!-- 【P1-修复】添加视觉隐藏样式，用于无障碍 -->
+    <style>
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* 【P1-修复】修复 dl/dt/dd 布局 */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px var(--card-shadow);
+            border: 2px solid var(--card-border);
+            flex-wrap: wrap;
+        }
+        
+        .stats-bar .stat-item {
+            margin: 0;
+        }
+        
+        .stats-bar .stat-item-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+    </style>
+</body>
+</html>

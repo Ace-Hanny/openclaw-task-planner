@@ -1,0 +1,25 @@
+{
+  "dailyPlanTable": {
+    "name": "日计划表",
+    "fields": [
+      { "name": "计划日期", "type": "text", "description": "格式：YYYY-MM-DD" },
+      { "name": "时间块", "type": "text", "description": "如：09:00-11:00" },
+      { "name": "任务安排", "type": "text", "description": "任务名称" },
+      { "name": "来源", "type": "singleSelect", "options": ["周计划", "每日习惯", "临时任务"] },
+      { "name": "状态", "type": "singleSelect", "options": ["待执行", "进行中", "已完成"] },
+      { "name": "预计耗时", "type": "number", "description": "番茄钟数" },
+      { "name": "实际耗时", "type": "number", "description": "番茄钟数" }
+    ]
+  },
+  "executionLogTable": {
+    "name": "执行记录表",
+    "fields": [
+      { "name": "执行日期", "type": "date", "description": "执行日期" },
+      { "name": "时间段", "type": "text", "description": "如：10:00-10:25" },
+      { "name": "任务", "type": "text", "description": "任务名称" },
+      { "name": "番茄钟数", "type": "number", "description": "完成的番茄钟数" },
+      { "name": "实际耗时", "type": "number", "description": "实际耗时（分钟）" },
+      { "name": "任务ID", "type": "text", "description": "日计划表记录ID" }
+    ]
+  }
+}
